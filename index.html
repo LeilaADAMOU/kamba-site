@@ -1,0 +1,873 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Kamba, ton compagnon IA sur WhatsApp pour partir étudier à l’étranger : visa, frais, logement, premier job.">
+<link rel="icon" href="img/n1_icon.png">
+<style>:root{padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Kamba</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Caveat:wght@600&family=Space+Mono:wght@700&display=swap">
+<style>
+/* Layout: sky-gradient hero card with a giant "Kamba" behind a Seyès notebook page, then airy bands: scrapbook notes, phone screens, boarding passes. Single light theme by brand choice. */
+:root{
+  --blue:#2464F6;      /* bleu Kamba */
+  --blue-2:#3881FD;    /* bleu du logo */
+  --sky:#AADAFF;       /* bleu ciel */
+  --pale:#EEF5FF;      /* fonds doux */
+  --ink:#0F1730;
+  --muted:#5A6479;
+  --line:#DCE5F3;
+  --white:#FFFFFF;
+  --sun:#F7C657;       /* jaune surligneur : accent unique */
+  --note:#FFF3C4;
+  --f-display:"Outfit","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --f-body:"DM Sans","Segoe UI",system-ui,-apple-system,sans-serif;
+  --f-mono:"Space Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --f-hand:"Caveat","Segoe Print","Comic Sans MS",cursive;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--white);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}.reveal{opacity:1!important;translate:none!important}}
+h1,h2,h3{font-family:var(--f-display);letter-spacing:-.025em;line-height:1.05;margin:0;text-wrap:balance}
+p{margin:0}
+a{color:inherit}
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var(--sun);outline-offset:3px;border-radius:10px}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.band{padding-block:110px}
+.eyebrow{display:inline-block;font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);margin-bottom:16px}
+h2{font-size:clamp(32px,4.6vw,54px);font-weight:700}
+.lead{font-size:19px;color:var(--muted);max-width:58ch}
+.center{text-align:center}.center .lead{margin-inline:auto}
+
+/* pills & buttons */
+.btn{display:inline-flex;align-items:center;gap:14px;font:700 16px var(--f-body);text-decoration:none;border-radius:999px;padding:8px 8px 8px 24px;border:0;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease}
+.btn:hover{transform:translateY(-2px)}
+
+.btn .arr{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none}
+.btn .arr svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.btn-white{background:var(--white);color:var(--ink);box-shadow:0 10px 30px rgba(15,23,48,.15)}
+.btn-white .arr{background:var(--blue);color:var(--white)}
+.btn-blue{background:var(--blue);color:var(--white)}
+.btn-blue .arr{background:var(--white);color:var(--blue)}
+
+/* HERO */
+.hero{padding-top:max(14px,env(safe-area-inset-top,0px))}
+.hero-card{position:relative;border-radius:36px;overflow:hidden;background:linear-gradient(180deg,#2B6AF4 0%,#4C8EFD 38%,#9CD0FF 78%,#CFE8FF 100%);color:var(--white);min-height:700px;isolation:isolate}
+.hero-card::after{content:"";position:absolute;inset:auto -10% -30% -10%;height:55%;background:radial-gradient(ellipse at center,rgba(255,255,255,.85),rgba(255,255,255,0) 65%);z-index:-1}
+.top{position:relative;z-index:5;display:flex;align-items:center;gap:16px;padding:22px 26px}
+.top .logo img{height:30px;display:block}
+.top nav{display:flex;gap:6px;margin-left:auto;margin-right:auto;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:5px;backdrop-filter:blur(8px)}
+.top nav a{text-decoration:none;font-size:14px;font-weight:500;padding:7px 15px;border-radius:999px}
+.top nav a:hover{background:rgba(255,255,255,.18)}
+.lang{display:flex;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:4px}
+.lang button{border:0;background:none;color:var(--white);font:700 13px var(--f-body);padding:6px 11px;border-radius:999px;cursor:pointer;opacity:.8}
+.lang button[aria-pressed="true"]{background:var(--white);color:var(--blue);opacity:1}
+.top .btn{padding:6px 6px 6px 18px;font-size:14px}
+.top .btn .arr{width:32px;height:32px}
+/* menu hamburger (petits écrans) */
+.burger{display:none;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.16);cursor:pointer;place-items:center;flex:none;padding:0}
+.burger span{display:block;width:18px;height:2px;border-radius:2px;background:var(--white);position:relative;transition:background .2s}
+.burger span::before,.burger span::after{content:"";position:absolute;left:0;width:18px;height:2px;border-radius:2px;background:var(--white);transition:transform .25s ease,top .25s ease}
+.burger span::before{top:-6px}.burger span::after{top:6px}
+.burger[aria-expanded="true"] span{background:transparent}
+.burger[aria-expanded="true"] span::before{top:0;transform:rotate(45deg)}
+.burger[aria-expanded="true"] span::after{top:0;transform:rotate(-45deg)}
+.menu{position:absolute;left:12px;right:12px;top:78px;z-index:20;background:var(--white);color:var(--ink);border-radius:24px;padding:10px 10px 14px;box-shadow:0 24px 60px rgba(15,23,48,.28)}
+.menu a.lk{display:flex;justify-content:space-between;align-items:center;text-decoration:none;font:600 20px var(--f-display);padding:14px 14px;border-radius:14px}
+.menu a.lk::after{content:"→";color:var(--blue)}
+.menu a.lk:hover{background:var(--pale)}
+.menu a.lk+a.lk{border-top:1px solid var(--line)}
+.menu .btn{width:100%;justify-content:space-between;margin-top:8px}
+.menu .num{display:block;text-align:center;font-size:13px;color:var(--muted);margin-top:10px}
+/* barre fixe qui apparaît après le header */
+.sbar{position:fixed;top:0;left:0;right:0;z-index:40;padding-top:env(safe-area-inset-top,0px);background:rgba(255,255,255,.9);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line);box-shadow:0 8px 30px rgba(15,23,48,.06);transform:translateY(-110%);transition:transform .35s cubic-bezier(.2,.8,.3,1);visibility:hidden}
+.sbar.show{transform:none;visibility:visible}
+.sbar .in{position:relative;display:flex;align-items:center;gap:18px;height:66px}
+.sbar .logo img{height:26px;display:block}
+.sbar nav{display:flex;gap:4px;margin-left:auto}
+.sbar nav a{text-decoration:none;font-size:14.5px;font-weight:500;color:var(--muted);padding:8px 14px;border-radius:999px}
+.sbar nav a:hover{color:var(--ink);background:var(--pale)}
+.sbar .btn{padding:5px 5px 5px 16px;font-size:14px;gap:10px}
+.sbar .btn .arr{width:30px;height:30px}
+.burger.dark{border-color:var(--line);background:var(--pale)}
+.burger.dark span,.burger.dark span::before,.burger.dark span::after{background:var(--ink)}
+.burger.dark[aria-expanded="true"] span{background:transparent}
+.sbar .menu{top:calc(100% + 8px);left:0;right:0}
+section[id]{scroll-margin-top:84px}
+
+/* bouton retour en haut */
+.to-top{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:30;width:50px;height:50px;border-radius:50%;border:0;background:var(--blue);color:var(--white);display:grid;place-items:center;cursor:pointer;box-shadow:0 12px 30px rgba(36,100,246,.35);opacity:0;translate:0 16px;pointer-events:none;transition:opacity .3s ease,translate .3s ease}
+.to-top.show{opacity:1;translate:0 0;pointer-events:auto}
+.to-top:hover{background:#1A55DE}
+.to-top svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.giant{position:absolute;left:0;right:0;top:64px;text-align:center;font:800 clamp(130px,25vw,350px)/.85 var(--f-display);letter-spacing:-.05em;background:linear-gradient(180deg,rgba(255,255,255,.95) 20%,rgba(255,255,255,.12) 85%);-webkit-background-clip:text;background-clip:text;color:transparent;z-index:0;user-select:none;pointer-events:none}
+.hero-grid{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;align-items:end;min-height:620px;padding:0 48px}
+.hero-copy{padding-bottom:130px;min-width:0}
+.hero-copy h1{font-size:clamp(40px,5.2vw,66px);font-weight:700;margin-bottom:18px;text-shadow:0 2px 24px rgba(20,60,160,.25)}
+.hero-copy p{font-size:18px;max-width:44ch;margin-bottom:28px;color:rgba(255,255,255,.94)}
+.hero-copy .row{display:flex;flex-wrap:wrap;align-items:center;gap:16px}
+.hero-copy small{font-size:14px;color:var(--ink);opacity:.75;font-weight:600}
+.stage{position:relative;align-self:end;justify-self:center;width:100%;max-width:480px;height:600px}
+.stage .masc{position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);height:560px;max-width:none;filter:drop-shadow(0 30px 40px rgba(20,60,160,.25))}
+.float{position:absolute;background:rgba(255,255,255,.88);backdrop-filter:blur(10px);color:var(--ink);border-radius:18px;padding:12px 14px;font-size:14px;line-height:1.35;box-shadow:0 14px 40px rgba(20,60,160,.18);display:flex;gap:10px;align-items:center;}
+.float b{display:block;font-weight:700}
+.float span{color:var(--muted);font-size:12.5px}
+.float .ico{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;flex:none;font-size:17px}
+.f1{left:-40px;top:70px;z-index:2}.f1 .ico{background:#DFF7E8;color:#178A4A}
+.f2{right:-50px;top:330px;z-index:2}.f2 .ico{background:var(--pale)}
+.f3{left:-50px;bottom:70px;z-index:2}.f3 .ico{background:var(--note)}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.ticket{position:absolute;z-index:3;right:-10px;top:24px;transform:rotate(7deg);background:var(--sun);color:var(--ink);font:800 13px var(--f-display);letter-spacing:.06em;padding:9px 16px;border-radius:10px;box-shadow:0 10px 26px rgba(15,23,48,.18)}
+.ticket::before,.ticket::after{content:"";position:absolute;top:50%;width:12px;height:12px;border-radius:50%;background:#5E9AFE;transform:translateY(-50%)}
+.ticket::before{left:-6px}.ticket::after{right:-6px}
+
+/* NOTEBOOK — Seyès page in the hero */
+.hero-card::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.13) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.13) 1px,transparent 1px);background-size:32px 32px;-webkit-mask-image:linear-gradient(180deg,#000 30%,transparent 90%);mask-image:linear-gradient(180deg,#000 30%,transparent 90%);z-index:-1}
+.notebook{position:absolute;left:50%;bottom:48px;width:400px;max-width:100%;transform:translateX(-50%) rotate(-3deg);background:var(--white);border-radius:6px 14px 14px 6px;box-shadow:0 30px 60px rgba(15,40,110,.28);z-index:1}
+.notebook .rings{position:absolute;left:-14px;top:18px;bottom:18px;width:28px;background:radial-gradient(circle at 50% 50%,#C9D3E6 0 5px,transparent 6px) 0 0/28px 32px repeat-y}
+.notebook .rings::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 13px 4px at 50% 50%,transparent 9px,#8E9AB3 10px,transparent 12px) 0 -2px/28px 32px repeat-y}
+.seyes{background-color:var(--white);background-image:linear-gradient(90deg,transparent 52px,#F29BA6 52px,#F29BA6 54px,transparent 54px),repeating-linear-gradient(180deg,transparent 0 7px,#E3ECFA 7px 8px,transparent 8px 15px,#E3ECFA 15px 16px,transparent 16px 23px,#E3ECFA 23px 24px,transparent 24px 31px,#BFD3F2 31px 32px)}
+.notebook .page{padding:30px 26px 26px 72px;border-radius:6px 14px 14px 6px;color:#24325A;font-family:var(--f-hand)}
+.notebook .ttl{font-size:30px;line-height:32px;font-weight:600;color:var(--blue)}
+.notebook .date{position:absolute;right:22px;top:30px;font:600 20px/32px var(--f-hand);color:#8A93A8}
+.todo{list-style:none;margin:0;padding:0}
+.todo li{font-family:var(--f-hand);font-weight:600;font-size:25px;line-height:32px;display:flex;gap:10px;align-items:center;color:#24325A}
+.todo li::before{content:"";width:17px;height:17px;border:2px solid #24325A;border-radius:3px;flex:none;margin-top:2px}
+.todo li{position:relative;width:fit-content;max-width:100%}
+.todo li.done{color:#7C88A3}
+.todo li.done::after{content:"";position:absolute;left:27px;right:-2px;top:52%;height:2px;border-radius:2px;background:var(--blue);transform-origin:left;rotate:-1deg}
+.todo li.done::before{content:"✓";border-color:var(--blue);color:var(--blue);font:700 15px/13px var(--f-body);text-align:center}
+.mark{background:linear-gradient(transparent 45%,rgba(247,198,87,.75) 45%,rgba(247,198,87,.75) 88%,transparent 88%);padding:0 3px}
+.notebook .scrib{font:600 25px/32px var(--f-hand);color:#D2475A;transform:rotate(-2deg);padding-left:30px}
+.clip{position:absolute;right:38px;top:-22px;width:22px;height:60px;border:3px solid #9AA6BE;border-radius:12px;border-bottom-color:transparent;transform:rotate(8deg);z-index:2}
+.hand{font-family:var(--f-hand);font-weight:600;color:#D2475A;font-size:24px;line-height:1.1}
+.annot{display:inline-block;transform:rotate(-3deg);margin-top:10px}
+.eyebrow{color:var(--ink);background:linear-gradient(transparent 50%,rgba(247,198,87,.7) 50%,rgba(247,198,87,.7) 92%,transparent 92%);padding:0 4px}
+.u{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 10' preserveAspectRatio='none'%3E%3Cpath d='M2 7c18-5 38-5 58-2s40 3 58-3' fill='none' stroke='%232464F6' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E") bottom/100% 12px no-repeat;padding-bottom:6px}
+.hero .u{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 10' preserveAspectRatio='none'%3E%3Cpath d='M2 7c18-5 38-5 58-2s40 3 58-3' fill='none' stroke='%23F7C657' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E")}
+/* FLIGHT PATHS */
+.fp{display:block;overflow:visible}
+.fp path{fill:none;stroke-width:2.2;stroke-dasharray:6 7;stroke-linecap:round}
+.fp .pln{fill:var(--ink)}
+.fp .pn{fill:var(--ink)}
+.fp.blue path{stroke:var(--blue)} .fp.blue .pln,.fp.blue .pn{fill:var(--blue)}
+.fp.white path{stroke:rgba(255,255,255,.9)} .fp.white .pln,.fp.white .pn{fill:var(--white)}
+.fp.grey path{stroke:#9AA3B5} .fp.grey .pln,.fp.grey .pn{fill:#9AA3B5}
+
+@keyframes dash{to{stroke-dashoffset:-26}}
+.fp text{font-family:var(--f-hand);font-weight:600;font-size:26px;fill:#D2475A}
+.hero-route{position:absolute;left:48px;bottom:26px;width:560px;max-width:calc(100% - 96px);z-index:2;pointer-events:none}
+.route-div{padding-top:70px}
+.route-div svg{width:100%;height:auto}
+.board .loops{position:absolute;right:230px;bottom:-34px;width:320px;pointer-events:none}
+.cmp .mini{margin-top:22px;padding-top:16px;border-top:1px dashed #C9D3E6}
+.cmp .mini svg{width:100%;max-width:340px;height:auto}
+.cmp .mini .hand{position:static;display:block;font-size:22px;color:var(--muted);background:none;box-shadow:none;transform:none;padding:0;margin-top:2px}
+.cmp .ka .mini .hand,.cmp .ag .mini .hand{position:static;display:block;font-size:22px;background:none;box-shadow:none;transform:none;padding:0;margin-top:2px;right:auto;top:auto}
+.cmp .ka .mini .hand{color:var(--blue)}
+.final .froute{position:absolute;right:300px;top:26px;width:300px;z-index:1;pointer-events:none}
+.foot-route{position:relative;height:28px;margin-bottom:26px}
+.foot-route::before{content:"";position:absolute;left:12px;right:40px;top:50%;border-top:2px dashed #C9D3E6}
+.foot-route svg{position:absolute;width:26px;height:26px;top:1px}
+.foot-route .a{left:0;fill:var(--blue)} .foot-route .b{right:0;fill:var(--blue)}
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:64px}
+.stat{border-radius:10px;padding:34px 28px 26px;background-color:var(--white);border:1px solid var(--line);box-shadow:0 10px 26px rgba(15,23,48,.05);min-width:0;display:flex;flex-direction:column;gap:10px;background-image:linear-gradient(180deg,transparent 18px,#F29BA6 18px,#F29BA6 20px,transparent 20px),repeating-linear-gradient(180deg,transparent 0 31px,#E3ECFA 31px 32px);background-position:0 0,0 22px;background-repeat:no-repeat,repeat}
+.stat b{font:700 clamp(32px,3.4vw,46px)/1 var(--f-display);white-space:nowrap;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.stat span{color:var(--muted);font-size:15.5px}
+.stat.hl{background-color:var(--blue);background-image:linear-gradient(180deg,transparent 18px,rgba(255,255,255,.55) 18px,rgba(255,255,255,.55) 20px,transparent 20px),repeating-linear-gradient(180deg,transparent 0 31px,rgba(255,255,255,.14) 31px 32px);color:var(--white);border-color:var(--blue)}
+.stat.hl span{color:rgba(255,255,255,.85)}
+
+/* PROBLEM — scrapbook */
+.problem{background:var(--white)}
+.board{position:relative;margin-top:56px;border-radius:14px;padding:60px 40px 60px 96px;border:1px solid var(--line);box-shadow:0 20px 50px rgba(15,23,48,.06);display:flex;flex-wrap:wrap;justify-content:center;gap:28px 30px}
+.note{position:relative;width:230px;min-height:150px;padding:28px 22px 22px;background:var(--note);font:600 25px/1.2 var(--f-hand);color:#3A3420;box-shadow:0 12px 26px rgba(15,23,48,.10);transform:rotate(var(--r,-2deg))}
+.note::before{content:"";position:absolute;top:-12px;left:50%;width:84px;height:24px;transform:translateX(-50%) rotate(-3deg);background:rgba(170,218,255,.75)}
+.note.b{background:#E3F1FF}
+.board.seyes{background-image:linear-gradient(90deg,transparent 64px,#F29BA6 64px,#F29BA6 66px,transparent 66px),repeating-linear-gradient(180deg,transparent 0 7px,#E8EFFB 7px 8px,transparent 8px 15px,#E8EFFB 15px 16px,transparent 16px 23px,#E8EFFB 23px 24px,transparent 24px 31px,#C9DAF4 31px 32px)}
+.holes{position:absolute;left:22px;top:40px;bottom:40px;width:18px;background:radial-gradient(circle,#F1F4FA 0 7px,#D6DEEC 7px 8px,transparent 9px) 0 0/18px 120px repeat-y}
+.note.w{background:var(--white);border:1px solid var(--line)}
+.board .stamp{position:absolute;right:28px;bottom:-22px;background:var(--blue);color:var(--white);font:700 15px var(--f-body);padding:12px 20px;border-radius:999px;transform:rotate(-3deg);box-shadow:0 12px 26px rgba(36,100,246,.3)}
+
+/* FEATURES — phone screens */
+.features{background:var(--pale)}
+.phones{display:grid;grid-template-columns:repeat(3,1fr);gap:26px;margin-top:56px}
+.ph{min-width:0}
+.screen{border-radius:36px;padding:16px;background:linear-gradient(180deg,#5C9BFF,#A9D6FF);box-shadow:0 20px 50px rgba(36,100,246,.18);aspect-ratio:9/13;display:flex;flex-direction:column;max-width:100%}
+.ph:nth-child(2) .screen{background:linear-gradient(180deg,#2B6AF4,#6FA8FF)}
+.ph:nth-child(3) .screen{background:linear-gradient(180deg,#86C2FF,#D4EBFF)}
+.screen .bar{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.92);border-radius:999px;padding:6px 12px 6px 6px}
+.screen .bar .av{width:32px;height:32px;border-radius:50%;background:var(--blue-2);display:grid;place-items:center;flex:none}
+.screen .bar .av img{width:18px;display:block}
+.screen .bar b{font-size:14px;display:block;line-height:1.1}
+.screen .bar small{font-size:11.5px;color:var(--muted)}
+.chat{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:9px;padding:16px 4px 6px}
+.m{max-width:86%;padding:10px 13px;border-radius:16px;font-size:14px;line-height:1.4;background:var(--white);color:var(--ink);box-shadow:0 4px 14px rgba(15,23,48,.06)}
+.m.me{align-self:flex-end;background:#D9FDD3;border-bottom-right-radius:5px}
+.m.k{align-self:flex-start;border-bottom-left-radius:5px}
+.m.receipt{border:1.5px dashed #9CC7FF}
+.m.receipt .r{display:flex;justify-content:space-between;gap:12px;font-size:13px;color:var(--muted)}
+.m.receipt .ok{color:#178A4A;font-weight:700}
+.m.warn{background:#FFF5DA;border-left:4px solid var(--sun)}
+.ph h3{font-size:24px;font-weight:700;margin:24px 0 6px}
+.ph p{color:var(--muted);font-size:16px}
+.alerts{margin-top:28px;border-radius:28px;background:var(--blue);color:var(--white);padding:34px 36px;display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center}
+.alerts>*{min-width:0}
+.alerts h3{font-size:28px;font-weight:700;margin-bottom:6px}
+.alerts p{color:rgba(255,255,255,.85)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.chips span{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);padding:8px 14px;border-radius:999px;font-size:14px;font-weight:600;white-space:nowrap}
+
+/* COMPARE */
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:52px}
+.cmp>div{border-radius:28px;padding:34px;min-width:0}
+.cmp .ag{background:#F4F5F8}
+.cmp .ka{position:relative;background:linear-gradient(160deg,#EAF3FF,#D4E8FF);border:2px solid var(--blue-2)}
+.cmp .ka .hand{position:absolute;right:26px;top:-20px;background:var(--white);padding:2px 12px;border-radius:8px;transform:rotate(4deg);box-shadow:0 6px 14px rgba(15,23,48,.08)}
+.cmp h3{font-size:22px;margin-bottom:6px}
+.cmp .price{font:700 40px/1.1 var(--f-display);letter-spacing:-.03em;margin:10px 0 18px}
+.cmp ul{list-style:none;padding:0;margin:0;display:grid;gap:12px}
+.cmp li{display:flex;gap:12px;font-size:16px}
+.cmp li i{width:22px;height:22px;border-radius:4px;flex:none;display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:800;margin-top:2px}
+.cmp .ag li i{background:#E3E5EC;color:var(--muted)}
+.cmp .ka li i{background:var(--blue);color:var(--white)}
+.disc{margin-top:20px;font-size:14.5px;color:var(--muted);text-align:center}
+
+/* JOURNEYS — boarding passes */
+.journeys{background:var(--white)}
+.passes{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:52px}
+.pass{position:relative;border-radius:22px;background:var(--white);border:1px solid var(--line);box-shadow:0 14px 34px rgba(15,23,48,.06);overflow:hidden;min-width:0}
+.pass .hd{background:var(--blue);color:var(--white);padding:12px 20px;display:flex;justify-content:space-between;font:700 12px var(--f-body);letter-spacing:.12em;text-transform:uppercase}
+.pass:nth-child(2) .hd{background:var(--blue-2)}
+.pass:nth-child(3) .hd{background:#5C9BFF}
+.pass .route{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:22px 20px 6px}
+.pass .route b{font:800 40px/1 var(--f-display);letter-spacing:-.02em}
+.pass .route small{display:block;font-size:13px;color:var(--muted);margin-top:4px}
+.pass .route .pl{flex:1;border-top:2px dashed var(--line);position:relative;height:0;margin:0 4px}
+.pass .route .pl::after{content:"✈";position:absolute;left:50%;top:-14px;transform:translateX(-50%);background:var(--white);padding:0 6px;color:var(--blue);font-size:18px}
+.pass .route .to{text-align:right}
+.pass .tear{border-top:2px dashed var(--line);margin:18px 0 0;position:relative}
+.pass .tear::before,.pass .tear::after{content:"";position:absolute;top:-11px;width:20px;height:20px;border-radius:50%;background:var(--white);border:1px solid var(--line)}
+.pass .tear::before{left:-11px}.pass .tear::after{right:-11px}
+.pass .next{padding:16px 20px 20px;font-size:15px}
+.pass .next span{display:block;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:3px}
+.langs{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:44px}
+.langs span{font:600 15px var(--f-body);padding:9px 16px;border-radius:12px;background:var(--pale);transform:rotate(var(--r,0deg))}
+.langs span.y{background:var(--sun)}
+
+/* MEET */
+.meet .card{display:grid;grid-template-columns:auto 1fr;gap:56px;align-items:center;border-radius:36px;background:linear-gradient(135deg,#EAF4FF,#CFE6FF);padding:48px 56px;overflow:hidden}
+.meet .card>div{min-width:0}
+.meet .face{width:230px;height:230px;border-radius:50%;background:var(--sky);overflow:hidden;box-shadow:0 0 0 10px rgba(255,255,255,.6)}
+.meet .face img{width:100%;display:block}
+.traits{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:26px}
+.traits div{background:rgba(255,255,255,.7);border-radius:18px;padding:16px 18px}
+.traits b{display:block;font:700 17px var(--f-display);margin-bottom:3px}
+.traits span{font-size:14.5px;color:var(--muted)}
+
+/* BIG BOARDING PASS */
+.bigpass{margin-top:48px;display:grid;grid-template-columns:1fr 250px;border-radius:28px;background:var(--white);box-shadow:0 30px 70px rgba(36,100,246,.16);border:1px solid var(--line);overflow:hidden;position:relative}
+.bigpass .main{padding:0 0 30px;min-width:0}
+.bigpass .top{background:linear-gradient(90deg,var(--blue),var(--blue-2));color:var(--white);padding:18px 32px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.bigpass .top img{height:24px;display:block}
+.bigpass .top span{font:700 12.5px var(--f-body);letter-spacing:.18em;text-transform:uppercase;opacity:.9}
+.bigpass .od{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;padding:28px 32px 10px}
+.bigpass .od small{display:block;font:700 11.5px var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.bigpass .od b{font:700 clamp(28px,3.6vw,44px)/1 var(--f-display);letter-spacing:-.03em}
+.bigpass .od .to{text-align:right}
+.bigpass .od .mid{flex:1;text-align:center;font-size:28px;color:var(--blue);padding-bottom:4px}
+.stops{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:22px 32px 0;position:relative}
+.stops::before{content:"";position:absolute;left:12.5%;right:12.5%;top:9px;border-top:2px solid var(--line)}
+.stops div{text-align:center;position:relative;min-width:0}
+.stops i{width:20px;height:20px;border-radius:50%;background:var(--white);border:3px solid var(--blue-2);display:block;margin:0 auto 10px;position:relative}
+.stops div:last-child i{background:var(--blue);border-color:var(--blue)}
+.stops b{display:block;font:600 15.5px var(--f-display)}
+.stops span{font-size:13.5px;color:var(--muted)}
+.info{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:28px 32px 0;padding-top:22px;border-top:1px dashed var(--line)}
+.info small{display:block;font:700 11px var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.info b{font:700 17px var(--f-display)}
+.stub{position:relative;border-left:2px dashed var(--line);background:var(--pale);padding:26px 24px;display:flex;flex-direction:column;gap:14px;justify-content:space-between}
+.stub::before,.stub::after{content:"";position:absolute;left:-15px;width:28px;height:28px;border-radius:50%;background:var(--white);border:1px solid var(--line)}
+.stub::before{top:-15px}.stub::after{bottom:-15px}
+.stub small{display:block;font:700 11px var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.stub .seat{font:700 54px/1 var(--f-display);color:var(--blue);letter-spacing:-.03em}
+.barcode{height:62px;border-radius:4px;background:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 4px,var(--ink) 4px 7px,transparent 7px 9px,var(--ink) 9px 10px,transparent 10px 13px,var(--ink) 13px 16px,transparent 16px 17px)}
+.stub .btn{justify-content:space-between;padding:6px 6px 6px 18px;font-size:15px}
+.stub .btn .arr{width:34px;height:34px}
+
+
+/* ANIMATIONS : seulement l'apparition des cartes au défilement */
+.reveal{opacity:0;translate:0 28px;transition:opacity .7s ease,translate .7s cubic-bezier(.2,.8,.3,1)}
+.reveal.in{opacity:1;translate:0 0}
+/* FAQ */
+.faq .list{max-width:820px;margin:44px auto 0;display:grid;gap:12px}
+details{background:var(--pale);border-radius:20px;padding:4px 24px}
+summary{cursor:pointer;list-style:none;padding:18px 0;font:600 18px var(--f-display);display:flex;justify-content:space-between;gap:16px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";width:30px;height:30px;border-radius:50%;background:var(--white);color:var(--blue);display:grid;place-items:center;font-size:20px;flex:none;transition:transform .2s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{padding:0 0 20px;color:var(--muted);font-size:16px;max-width:66ch}
+
+/* FINAL */
+.final .card{position:relative;border-radius:36px;overflow:hidden;background:linear-gradient(120deg,#2464F6,#4C8EFD 60%,#8CC6FF);color:var(--white);padding:64px 56px;display:grid;grid-template-columns:1.3fr .7fr;align-items:center;gap:24px;min-height:380px}
+.final .card>div{min-width:0;position:relative;z-index:2}
+.final h2{color:var(--white);margin-bottom:14px}
+.final p{color:rgba(255,255,255,.9);font-size:18px;margin-bottom:26px;max-width:46ch}
+.final .num{margin-top:18px;font-size:15px;color:rgba(255,255,255,.85)}
+.final .num b{color:var(--white);user-select:all}
+.final .join{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:600;margin-bottom:18px}
+.final .join i{width:8px;height:8px;border-radius:50%;background:#7CF0A6;display:block}
+.final .paper{position:relative;justify-self:end;width:300px;max-width:100%;transform:rotate(4deg);border-radius:4px;padding:30px 22px 22px 66px;box-shadow:0 24px 50px rgba(10,30,90,.3);color:#24325A}
+.final .paper::before{content:"";position:absolute;left:0;right:0;top:-8px;height:16px;background:radial-gradient(circle at 8px 0,transparent 7px,var(--white) 8px) 0 0/16px 16px repeat-x}
+.final .paper .ttl{font:600 28px/32px var(--f-hand);color:var(--blue)}
+.final .paper .todo li{font-size:24px}
+
+footer{padding-block:48px 40px;font-size:14px;color:var(--muted)}
+footer .row{display:flex;flex-wrap:wrap;gap:14px 26px;align-items:center}
+footer img{height:24px;display:block}
+footer nav{display:flex;flex-wrap:wrap;gap:8px 20px;margin-left:auto}
+footer nav a{text-decoration:none}
+footer nav a:hover{color:var(--blue)}
+footer .legal{margin-top:22px;padding-top:22px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:space-between;font-size:13px}
+
+/* responsive */
+@media (max-width:1000px){
+  .top nav{display:none}
+  .burger{display:grid}
+  .sbar nav{display:none}
+  .sbar .btn{margin-left:auto}
+  .top .lang{margin-left:auto}
+  .hero-grid{grid-template-columns:1fr;padding:0 26px;min-height:0}
+  .hero-copy{padding-bottom:0;padding-top:0;margin-top:-34px;position:relative;z-index:2}
+  .hero-route,.final .froute{display:none}
+  .board .loops{right:auto;left:40px;width:240px;bottom:-40px}
+  .stage{height:auto;max-width:440px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:12px;padding:28px 0 44px}
+  .stage .ticket,.stage .float{position:static}
+  .stage .ticket{transform:rotate(-2deg);order:1}
+  .stage .f1{order:2}
+  .stage .f2,.stage .f3{display:none}
+  .notebook{position:relative;left:auto;bottom:auto;order:3;width:100%;max-width:400px;margin-top:14px;transform:rotate(-2deg)}
+  .giant{position:relative;top:auto;font-size:28.5vw;line-height:.82;margin-top:10px;letter-spacing:-.075em;margin-left:-12px;margin-right:-12px}
+  .phones,.passes{grid-template-columns:1fr;max-width:420px;margin-inline:auto}
+  .bigpass{grid-template-columns:1fr}
+  .stub{border-left:0;border-top:2px dashed var(--line);flex-direction:row;flex-wrap:wrap;align-items:center}
+  .stub::before{left:-15px;top:-15px}.stub::after{left:auto;right:-15px;top:-15px;bottom:auto}
+  .stub .barcode{flex:1 1 100%}
+  .info{grid-template-columns:1fr 1fr}
+  .alerts{grid-template-columns:1fr}.chips{justify-content:flex-start}
+  .cmp{grid-template-columns:1fr}
+  .meet .card{grid-template-columns:1fr;padding:36px 28px;gap:28px}
+  .traits{grid-template-columns:1fr}
+  .final .card{grid-template-columns:1fr;padding:44px 28px}
+  .final .paper{justify-self:start;margin-top:12px}
+  .band{padding-block:80px}
+}
+@media (max-width:600px){
+  body{font-size:16px}
+  .top{padding:16px}
+  .top > .btn{display:none}
+  .hero-card{border-radius:28px}
+  .hero-copy{padding-top:0;margin-top:-7.5vw;position:relative;z-index:2}
+  .board .loops{display:none}
+  .bigpass .od,.bigpass .top{padding-left:20px;padding-right:20px}
+  .stops,.info{margin-left:20px;margin-right:20px}
+  .stops b{font-size:13.5px}.stops span{display:none}
+  .bigpass .od .mid{font-size:20px}
+  .stats{grid-template-columns:1fr}
+  .notebook{max-width:340px}
+  .notebook .date{display:none}
+  .notebook .ttl{font-size:27px}
+  .todo li{font-size:21px}
+  .notebook .page{padding:26px 16px 20px 64px}
+  .todo li{font-size:22px}
+  .holes{left:12px}
+  .float{font-size:13px;padding:10px 12px}
+  .board{padding:44px 16px 56px 56px}
+  .note{width:100%;max-width:300px}
+  .meet .face{width:170px;height:170px}
+  .final .card{padding:36px 22px}
+}
+
+/* ===== ORDINATEUR : tout aligné de haut en bas, menu hamburger comme sur mobile ===== */
+@media (min-width:1001px){
+  .hero-card{min-height:0;padding-bottom:10px}
+  .giant{position:relative;top:auto;margin-top:6px;font-size:clamp(220px,28vw,420px);line-height:.82;padding-bottom:.04em}
+  .hero-grid{display:block;min-height:0;padding:0 48px}
+  .hero-copy{text-align:center;max-width:920px;margin:-72px auto 0;padding:0;position:relative;z-index:2}
+  .hero-copy h1{font-size:clamp(46px,5vw,70px);line-height:1.08;margin-bottom:26px}
+  .hero-copy p{font-size:19.5px;line-height:1.7;max-width:54ch;margin:0 auto 36px}
+  .hero-copy .row{justify-content:center;gap:20px}
+  .stage{position:relative;height:auto;max-width:none;width:100%;margin-top:76px;padding-bottom:84px;display:flex;justify-content:center}
+  .notebook{position:relative;left:auto;bottom:auto;width:min(700px,60%);transform:rotate(-1.5deg)}
+  .notebook .page{padding:42px 44px 36px 92px}
+  .notebook .ttl{font-size:40px;line-height:48px;margin-bottom:12px}
+  .notebook .date{top:44px;right:40px;font-size:24px}
+  .notebook .todo li{font-size:30px;line-height:48px}
+  .notebook .todo li::before{width:20px;height:20px}
+  .notebook .todo li.done::after{left:30px}
+  .notebook .scrib{font-size:32px;line-height:48px;margin-top:10px}
+  .float{max-width:220px}
+  .f1{left:0;top:30px}
+  .f3{left:0;top:200px;bottom:auto}
+  .ticket{right:2%;top:24px}
+  .f2{right:0;top:150px}
+  .hero-route{left:44px;bottom:28px;width:380px}
+}
+@media (min-width:1001px) and (max-width:1200px){
+  .top nav a,.sbar nav a{padding:7px 10px;font-size:13.5px}
+  .top{gap:12px}
+  .float{max-width:180px;font-size:13px;padding:10px 12px}
+  .notebook{width:min(640px,58%)}
+}
+/* trajet du header en couleur */
+.fp.color path{stroke:var(--blue);stroke-width:2.6}
+.fp.color .pn{fill:#D2475A}
+.fp.color .pln{fill:var(--blue)}
+</style>
+</head>
+<body>
+
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="plane" viewBox="0 0 24 24"><path transform="rotate(90 12 12)" d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></symbol>
+  <symbol id="pin" viewBox="0 0 24 28"><path d="M12 1a9 9 0 0 0-9 9c0 6.6 9 17 9 17s9-10.4 9-17a9 9 0 0 0-9-9zm0 12.4A3.4 3.4 0 1 1 12 6.6a3.4 3.4 0 0 1 0 6.8z"/></symbol>
+</svg>
+
+<header class="sbar" id="sbar" aria-label="Barre de navigation">
+  <div class="wrap in">
+    <a class="logo" href="#top" aria-label="Kamba"><img src="img/n1_lockup_blue.png" alt="Kamba"></a>
+    <nav aria-label="Sections">
+      <a href="#features" data-i18n="nav1">Ce que fait Kamba</a>
+      <a href="#prix" data-i18n="nav2">Prix</a>
+      <a href="#trajets" data-i18n="nav3">Trajets</a>
+      <a href="#faq">FAQ</a>
+      <a href="a-propos.html" data-i18n="l1">À propos</a>
+    </nav>
+    <a class="btn btn-blue wa-link" href="https://wa.me/12207990396" target="_blank" rel="noopener"><span data-i18n="cta">Écris à Kamba</span><span class="arr"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+    <button type="button" class="burger dark" data-burger aria-expanded="false" aria-controls="menu2" aria-label="Ouvrir le menu" data-i18n-aria="menu_open"><span></span></button>
+    <div class="menu" id="menu2" hidden>
+      <a class="lk" href="#features" data-i18n="nav1">Ce que fait Kamba</a>
+      <a class="lk" href="#prix" data-i18n="nav2">Prix</a>
+      <a class="lk" href="#trajets" data-i18n="nav3">Trajets</a>
+      <a class="lk" href="#faq">FAQ</a>
+      <a class="lk" href="a-propos.html" data-i18n="l1">À propos</a>
+      <span class="num">WhatsApp : +1 220 799 0396</span>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero wrap" id="top">
+  <div class="hero-card">
+    <div class="top">
+      <a class="logo" href="#top" aria-label="Kamba"><img src="img/n1_lockup.png" alt="Kamba"></a>
+      <nav aria-label="Sections">
+        <a href="#features" data-i18n="nav1">Ce que fait Kamba</a>
+        <a href="#prix" data-i18n="nav2">Prix</a>
+        <a href="#trajets" data-i18n="nav3">Trajets</a>
+        <a href="#faq">FAQ</a>
+        <a href="a-propos.html" data-i18n="l1">À propos</a>
+      </nav>
+      <div class="lang" role="group" aria-label="Langue / Language">
+        <button type="button" id="lang-fr" data-lang="fr" aria-pressed="true">FR</button>
+        <button type="button" id="lang-en" data-lang="en" aria-pressed="false">EN</button>
+      </div>
+      <a class="btn btn-white wa-link" href="https://wa.me/12207990396" target="_blank" rel="noopener"><span class="t" data-i18n="cta">Écris à Kamba</span><span class="arr"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+      <button type="button" class="burger" id="burger" data-burger aria-expanded="false" aria-controls="menu" aria-label="Ouvrir le menu" data-i18n-aria="menu_open"><span></span></button>
+    </div>
+    <div class="menu" id="menu" hidden>
+      <a class="lk" href="#features" data-i18n="nav1">Ce que fait Kamba</a>
+      <a class="lk" href="#prix" data-i18n="nav2">Prix</a>
+      <a class="lk" href="#trajets" data-i18n="nav3">Trajets</a>
+      <a class="lk" href="#faq">FAQ</a>
+      <a class="lk" href="a-propos.html" data-i18n="l1">À propos</a>
+      <a class="btn btn-blue wa-link" href="https://wa.me/12207990396" target="_blank" rel="noopener"><span data-i18n="cta">Écris à Kamba</span><span class="arr"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+      <span class="num">WhatsApp : +1 220 799 0396</span>
+    </div>
+
+    <div class="giant" aria-hidden="true">Kamba</div>
+
+<svg class="fp color hero-route" viewBox="0 0 560 80" aria-hidden="true"><path d="M16 56 C 70 78, 130 74, 170 56 C 205 40, 212 14, 188 12 C 166 10, 160 40, 196 54 C 262 80, 360 70, 430 46 C 468 33, 498 27, 526 30"/><use href="#pin" x="5.0" y="31.799999999999997" width="22" height="25.299999999999997" class="pn"/><use href="#plane" x="515.0" y="15.0" width="30" height="30" transform="rotate(8 530 30)" class="pln"/></svg>
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <h1 data-i18n-html="h1">Garde le contrôle de ta <span class="u">vie à l’étranger.</span></h1>
+        <p data-i18n="hero_p">De la lettre d’admission au premier job : visa, frais, logement, heures de travail, impôts. Kamba s’en occupe avec toi, sur WhatsApp.</p>
+        <div class="row">
+          <a class="btn btn-white wa-link" href="https://wa.me/12207990396" target="_blank" rel="noopener"><span data-i18n="cta">Écris à Kamba</span><span class="arr"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+          <small data-i18n="free">Gratuit pour commencer.</small>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="notebook">
+          <div class="rings"></div><div class="clip"></div>
+          <div class="page seyes">
+            <div class="ttl" data-i18n="nb_t">Ma liste pour partir ✈</div>
+            <div class="date">J-45</div>
+            <ul class="todo">
+              <li class="done" data-i18n="td1">Lettre d’admission</li>
+              <li class="done" data-i18n="td2">Formulaire DS-160</li>
+              <li class="done"><span class="mark" data-i18n="td3">Frais SEVIS · 350 $</span></li>
+              <li data-i18n="td4">Entretien visa · jeudi 9 h</li>
+              <li data-i18n="td5">Trouver un logement</li>
+              <li data-i18n="td6">Ouvrir un compte bancaire</li>
+            </ul>
+            <div class="scrib" data-i18n="nb_s">→ Kamba s’occupe du reste !</div>
+          </div>
+        </div>
+        <div class="ticket">LOS ✈ JFK · KAMBA AIR</div>
+        <div class="float f1"><div class="ico">✓</div><div><b data-i18n="fl1">SEVIS payé</b><span data-i18n="fl1s">350 $ · reçu dans le chat</span></div></div>
+        <div class="float f2"><div class="ico">🏦</div><div><b data-i18n="fl2">Compte bancaire ouvert</b><span data-i18n="fl2s">Pièces vérifiées par Kamba</span></div></div>
+        <div class="float f3"><div class="ico">📶</div><div><b data-i18n="fl3">Carte SIM activée</b><span data-i18n="fl3s">Dès ton arrivée</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b>500–3 000 $+</b><span data-i18n="s1">ce que coûte une agence, par dossier, souvent payé d’avance</span></div>
+    <div class="stat hl"><b>0 $</b><span data-i18n="s2">pour commencer avec Kamba. Ensuite, tu paies seulement ce que tu utilises.</span></div>
+    <div class="stat"><b>240</b><span data-i18n="s3">étudiants nous rejoignent cette semaine</span></div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="band problem">
+  <div class="wrap center">
+    <span class="eyebrow" data-i18n="pb_e">Le problème</span>
+    <h2 data-i18n="pb_t">Personne ne te donne de mode d’emploi.</h2>
+    <div class="hand annot" data-i18n="pb_h">(on est tous passés par là…)</div>
+    <p class="lead" style="margin-top:12px" data-i18n="pb_p">Alors tu bricoles avec les groupes WhatsApp, de vieux posts de forum et des agents pas toujours fiables. Résultat :</p>
+    <div class="board seyes"><div class="holes"></div>
+      <div class="note" style="--r:-3deg" data-i18n="n1">La banque veut un bail. Le proprio veut un compte bancaire. 🙃</div>
+      <div class="note b" style="--r:2deg" data-i18n="n2">20 h de travail par semaine… ou 40 ? Chacun dit autre chose.</div>
+      <div class="note w" style="--r:-1.5deg" data-i18n="n3">« Envoie 1 500 $ de caution d’abord. » Vraiment ?</div>
+      <div class="note" style="--r:3deg" data-i18n="n4">J’ai raté la date limite de l’OPT…</div>
+      <svg class="fp blue loops" viewBox="0 0 300 70" aria-hidden="true"><path d="M10 34 C 40 62, 70 60, 90 42 C 108 24, 96 6, 82 12 C 66 20, 80 48, 112 50 C 142 52, 150 30, 170 26 C 190 22, 186 4, 172 8 C 158 12, 168 40, 200 44 C 232 48, 258 44, 282 40"/><use href="#pin" x="0.0" y="12.0" width="20" height="23.0" class="pn"/><use href="#plane" x="273.0" y="27.0" width="26" height="26" transform="rotate(-6 286 40)" class="pln"/></svg>
+      <span class="stamp" data-i18n="stamp">Kamba a la réponse →</span>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="band features" id="features">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow" data-i18n="ft_e">Ce que fait Kamba</span>
+      <h2 data-i18n-html="ft_t">Il ne fait pas que répondre. Il <span class="u">avance avec toi.</span></h2>
+    </div>
+    <div class="phones">
+      <div class="ph">
+        <div class="screen">
+          <div class="bar"><span class="av"><img src="img/n1_icon.png" alt=""></span><div><b>Kamba</b><small data-i18n="online">en ligne</small></div></div>
+          <div class="chat">
+            <div class="m me" data-i18n="c1a">Je bloque sur le DS-160 🥲</div>
+            <div class="m k" data-i18n="c1b">On le remplit ensemble, section par section. Ensuite : preuve de fonds, puis un entretien blanc.</div>
+            <div class="m me" data-i18n="c1c">Ok, on y va !</div>
+          </div>
+        </div>
+        <h3 data-i18n="f1t">Ton dossier visa</h3>
+        <p data-i18n="f1">DS-160 guidé, preuve de fonds, et entraînement à l’entretien avant le jour J.</p>
+      </div>
+      <div class="ph">
+        <div class="screen">
+          <div class="bar"><span class="av"><img src="img/n1_icon.png" alt=""></span><div><b>Kamba</b><small data-i18n="online">en ligne</small></div></div>
+          <div class="chat">
+            <div class="m me" data-i18n="c2a">Je peux payer le SEVIS en naira ?</div>
+            <div class="m k receipt"><div class="r"><span data-i18n="c2r1">Frais SEVIS</span><span>350 $</span></div><div class="r"><span data-i18n="c2r2">Payé en</span><span>naira</span></div><div class="r"><span data-i18n="c2r3">Statut</span><span class="ok" data-i18n="c2r4">✓ Payé</span></div></div>
+            <div class="m k" data-i18n="c2b">Voilà ton reçu 🧾 Le taux t’a été affiché avant de confirmer.</div>
+          </div>
+        </div>
+        <h3 data-i18n="f2t">Les frais officiels</h3>
+        <p data-i18n="f2">SEVIS, CAQ, frais de dossier : tu paies en naira, cedis ou francs CFA, avec le reçu dans le chat.</p>
+      </div>
+      <div class="ph">
+        <div class="screen">
+          <div class="bar"><span class="av"><img src="img/n1_icon.png" alt=""></span><div><b>Kamba</b><small data-i18n="online">en ligne</small></div></div>
+          <div class="chat">
+            <div class="m me" data-i18n="c3a">Le proprio veut 1 500 $ de caution avant la visite.</div>
+            <div class="m k warn" data-i18n="c3b">⚠️ Attends ! Une caution avant visite, c’est un signe d’arnaque courant. Je vérifie le propriétaire d’abord.</div>
+          </div>
+        </div>
+        <h3 data-i18n="f3t">Ton logement</h3>
+        <p data-i18n="f3">Kamba vérifie le propriétaire et les règles de caution avant que le moindre argent parte.</p>
+      </div>
+    </div>
+    <div class="alerts">
+      <div><h3 data-i18n="al_t">Kamba te prévient avant.</h3><p data-i18n="al_p">Il garde un œil sur tes échéances et t’écrit le premier, avant qu’il soit trop tard.</p></div>
+      <div class="chips"><span data-i18n="ch1">Dates de visa</span><span data-i18n="ch2">Heures de travail</span><span data-i18n="ch3">Paiements</span><span data-i18n="ch4">Candidatures</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING / COMPARE -->
+<section class="band" id="prix">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow" data-i18n="px_e">Prix</span>
+      <h2 data-i18n="px_t">Arrête de payer des agences des milliers de dollars.</h2>
+    </div>
+    <div class="cmp">
+      <div class="ag">
+        <h3 data-i18n="ag_t">Une agence classique</h3>
+        <div class="price">500–3 000 $+</div>
+        <ul>
+          <li><i>–</i><span data-i18n="ag1">Par dossier, souvent payé d’avance</span></li>
+          <li><i>–</i><span data-i18n="ag2">L’aide s’arrête souvent après le visa</span></li>
+          <li><i>–</i><span data-i18n="ag3">Difficile de savoir si le conseil est bon</span></li>
+        </ul>
+      </div>
+      <div class="ka">
+        <span class="hand" data-i18n="ka_h">le bon choix ✓</span>
+        <h3>Kamba</h3>
+        <div class="price" data-i18n="ka_p">Gratuit pour commencer</div>
+        <ul>
+          <li><i>✓</i><span data-i18n="ka1">Tu paies seulement les tâches que tu utilises</span></li>
+          <li><i>✓</i><span data-i18n="ka2">Du visa jusqu’au premier job</span></li>
+          <li><i>✓</i><span data-i18n="ka3">Le taux est affiché avant chaque paiement</span></li>
+        </ul>
+      </div>
+    </div>
+    <p class="disc" data-i18n="disc">Ce sont les gouvernements qui décident des visas. Kamba remplace l’intermédiaire, pas la procédure officielle.</p>
+  </div>
+</section>
+
+<!-- JOURNEYS -->
+<section class="band journeys" id="trajets" style="padding-top:0">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow" data-i18n="jr_e">Ton trajet</span>
+      <h2 data-i18n="jr_t">Un plan fait pour ton départ.</h2>
+      <p class="lead" style="margin-top:16px" data-i18n="jr_p">Pas d’appli à télécharger. Tu écris ou tu envoies une note vocale sur WhatsApp, et Kamba adapte tout à ton pays de départ et d’arrivée.</p>
+    </div>
+    <div class="passes">
+      <div class="pass"><div class="hd"><span>Kamba Air</span><span data-i18n="pass">Carte d’embarquement</span></div>
+        <div class="route"><div><b>DKR</b><small>Dakar</small></div><div class="pl"></div><div class="to"><b>YUL</b><small>Montréal</small></div></div>
+        <div class="tear"></div><div class="next"><span data-i18n="nx">Prochaine étape</span><b data-i18n="nx1">CAQ, puis permis d’études</b></div></div>
+      <div class="pass"><div class="hd"><span>Kamba Air</span><span data-i18n="pass">Carte d’embarquement</span></div>
+        <div class="route"><div><b>LOS</b><small>Lagos</small></div><div class="pl"></div><div class="to"><b>BOS</b><small>Boston</small></div></div>
+        <div class="tear"></div><div class="next"><span data-i18n="nx">Prochaine étape</span><b data-i18n="nx2">DS-160 et frais SEVIS</b></div></div>
+      <div class="pass"><div class="hd"><span>Kamba Air</span><span data-i18n="pass">Carte d’embarquement</span></div>
+        <div class="route"><div><b>ABJ</b><small>Abidjan</small></div><div class="pl"></div><div class="to"><b>YYZ</b><small>Toronto</small></div></div>
+        <div class="tear"></div><div class="next"><span data-i18n="nx">Prochaine étape</span><b data-i18n="nx3">Permis d’études et preuve de fonds</b></div></div>
+    </div>
+    <div class="langs" aria-label="Langues">
+      <span class="y" style="--r:-3deg">Français</span><span style="--r:2deg">English</span><span style="--r:-1deg">Pidgin</span><span style="--r:3deg">Português</span><span style="--r:-2deg">العربية</span><span class="y" style="--r:1deg" data-i18n="more">+ d’autres</span>
+    </div>
+  </div>
+</section>
+
+<!-- BIG PASS -->
+<section class="band" id="billet" style="padding-top:0">
+  <div class="wrap">
+    <div class="center">
+      <span class="eyebrow" data-i18n="bp_e">Ton billet</span>
+      <h2 data-i18n="bp_t">Quatre escales. Un seul compagnon.</h2>
+    </div>
+    <div class="bigpass">
+      <div class="main">
+        <div class="top"><img src="img/n1_lockup.png" alt="Kamba"><span data-i18n="pass">Carte d’embarquement</span></div>
+        <div class="od">
+          <div><small data-i18n="bp_from">Départ</small><b data-i18n="rd1">Chez toi</b></div>
+          <div class="mid" aria-hidden="true">✈</div>
+          <div class="to"><small data-i18n="bp_to">Arrivée</small><b data-i18n="rd2">Ta nouvelle vie</b></div>
+        </div>
+        <div class="stops">
+          <div><i></i><b data-i18n="e1">Admission</b><span data-i18n="e1s">Ta lettre</span></div>
+          <div><i></i><b data-i18n="e2">Visa</b><span data-i18n="e2s">Dossier et entretien</span></div>
+          <div><i></i><b data-i18n="e3">Arrivée</b><span data-i18n="e3s">Logement, banque, SIM</span></div>
+          <div><i></i><b data-i18n="e4">Premier job</b><span data-i18n="e4s">Règles et CV</span></div>
+        </div>
+        <div class="info">
+          <div><small data-i18n="i1">Passager</small><b data-i18n="i1v">Toi</b></div>
+          <div><small data-i18n="i2">Vol</small><b>KB 2026</b></div>
+          <div><small data-i18n="i3">Porte</small><b>WhatsApp</b></div>
+          <div><small data-i18n="i4">Classe</small><b data-i18n="i4v">Gratuite</b></div>
+        </div>
+      </div>
+      <div class="stub">
+        <div><small data-i18n="seat">Siège</small><div class="seat">1A</div></div>
+        <div class="barcode" aria-hidden="true"></div>
+        <a class="btn btn-blue wa-link" href="https://wa.me/12207990396" target="_blank" rel="noopener"><span data-i18n="board_now">Embarquer</span><span class="arr"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="band faq" id="faq" style="padding-top:0">
+  <div class="wrap">
+    <div class="center"><span class="eyebrow">FAQ</span><h2 data-i18n="fq_t">Tes questions, nos réponses.</h2></div>
+    <div class="list">
+      <details><summary data-i18n="q1">C’est quoi, Kamba ?</summary><p data-i18n="a1">Un compagnon IA pour les étudiants qui partent à l’étranger. Il vit dans WhatsApp et t’accompagne de la lettre d’admission jusqu’au premier job.</p></details>
+      <details><summary data-i18n="q2">Kamba peut-il m’obtenir un visa ?</summary><p data-i18n="a2">Non. Ce sont les gouvernements qui décident. Kamba s’assure que ton dossier est complet et envoyé à temps, et te redirige vers un avocat ou le bureau international de ton école quand c’est nécessaire.</p></details>
+      <details><summary data-i18n="q3">Comment marchent les paiements ?</summary><p data-i18n="a3">Discuter est gratuit pour commencer. Les frais officiels se paient dans ta monnaie locale, avec le taux affiché avant que tu confirmes. Pas de forfait à payer d’avance.</p></details>
+      <details><summary data-i18n="q4">Mes documents sont-ils privés ?</summary><p data-i18n="a4">Oui. Tes documents t’appartiennent. Ils servent uniquement aux tâches que tu demandes, ne sont ni vendus ni partagés, et peuvent être supprimés sur demande.</p></details>
+      <details><summary data-i18n="q5">Dans quelles langues ?</summary><p data-i18n="a5">Français, anglais, pidgin, portugais, arabe et d’autres. Les formulaires officiels restent dans la langue demandée.</p></details>
+      <details><summary data-i18n="q6">Pour quels pays ?</summary><p data-i18n="a6">On commence par l’Afrique de l’Ouest (Nigeria, Sénégal, Côte d’Ivoire, Ghana) vers les États-Unis et le Canada, et d’autres destinations arrivent.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL -->
+<section class="final" style="padding-bottom:20px">
+  <div class="wrap">
+    <div class="card">
+      <div>
+        <span class="join"><i></i><span data-i18n="join">240 étudiants nous rejoignent cette semaine</span></span>
+        <h2 data-i18n="fn_t">Ta vie à l’étranger commence par un message.</h2>
+        <p data-i18n="fn_p">Dis bonjour à Kamba sur WhatsApp. Il te demande où tu en es, et vous avancez ensemble. Gratuit pour commencer.</p>
+        <a class="btn btn-white wa-link" href="https://wa.me/12207990396" target="_blank" rel="noopener"><span data-i18n="cta">Écris à Kamba</span><span class="arr"><svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></a>
+        <div class="num"><span data-i18n="num">WhatsApp :</span> <b>+1 220 799 0396</b></div>
+      </div>
+      <svg class="fp white move froute" viewBox="0 0 300 130" aria-hidden="true"><path d="M10 112 C 70 120, 110 70, 150 64 C 186 58, 196 92, 170 96 C 146 99, 150 50, 200 36 C 236 26, 262 26, 286 22"/><use href="#pin" x="-1.0" y="87.8" width="22" height="25.299999999999997" class="pn"/><use href="#plane" x="276.0" y="8.0" width="28" height="28" transform="rotate(-8 290 22)" class="pln"/></svg>
+      <div class="paper seyes" aria-hidden="true">
+        <div class="ttl" data-i18n="fp_t">À faire aujourd’hui</div>
+        <ul class="todo"><li class="done" data-i18n="fp1">Recevoir ma lettre</li><li data-i18n="fp2">Écrire à Kamba</li><li data-i18n="fp3">Souffler un peu 😌</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<button type="button" class="to-top" id="toTop" aria-label="Retour en haut" data-i18n-aria="to_top"><svg viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-route" aria-hidden="true"><svg class="a" viewBox="0 0 24 28"><use href="#pin"/></svg><svg class="b" viewBox="0 0 24 24"><use href="#plane"/></svg></div>
+    <div class="row">
+      <img src="img/n1_lockup_blue.png" alt="Kamba">
+      <nav aria-label="Liens">
+        <a href="a-propos.html" data-i18n="l1">À propos</a>
+        <a href="faq.html">FAQ</a>
+        <a href="carrieres.html" data-i18n="l2">Carrières</a>
+        <a href="conditions.html" data-i18n="l3">Conditions</a>
+        <a href="confidentialite.html" data-i18n="l4">Confidentialité</a>
+      </nav>
+    </div>
+    <div class="legal">
+      <span data-i18n="legal">Kamba te guide, mais n’accorde jamais de visa et ne donne pas de conseil juridique.</span>
+      <span data-i18n="copy">© 2026 Kamba AI · opéré par MassKode LLC</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// toujours ouvrir la page en haut (sauf lien vers une section)
+if("scrollRestoration" in history) history.scrollRestoration="manual";
+if(!location.hash){ scrollTo(0,0); addEventListener("load",()=>scrollTo(0,0)); }
+const T = { en: {
+  nav1:"What Kamba does", nav2:"Pricing", nav3:"Routes", cta:"Message Kamba",
+  h1:"Stay in control of your <span class=\"u\">life abroad.</span>",
+  nb_t:"My moving-abroad list ✈", td1:"Admission letter", td2:"DS-160 form", td3:"SEVIS fee · $350", td4:"Visa interview · Thu 9 am", td5:"Find housing", td6:"Open a bank account", nb_s:"→ Kamba handles the rest!", pb_h:"(we’ve all been there…)", ka_h:"the smart choice ✓", fp_t:"To do today", fp1:"Get my letter", fp2:"Message Kamba", fp3:"Take a breath 😌",
+  hero_p:"From admission letter to first job: visa, fees, housing, work hours, taxes. Kamba handles it with you, on WhatsApp.",
+  free:"Free to start.",
+  fl1:"SEVIS paid", fl1s:"$350 · receipt in the chat", fl2:"Bank account opened", fl2s:"Documents checked by Kamba", fl3:"SIM card activated", fl3s:"As soon as you land",
+  s1:"what an agency charges per application, often upfront", s2:"to start with Kamba. After that, you only pay for what you use.", s3:"students are joining us this week",
+  pb_e:"The problem", pb_t:"Nobody hands you a manual.",
+  pb_p:"So you piece it together from WhatsApp groups, old forum posts and agents you can’t always trust. The result:",
+  n1:"The bank wants a lease. The landlord wants a bank account. 🙃", n2:"20 work hours a week… or 40? Everyone says something different.", n3:"“Send the $1,500 deposit first.” Really?", n4:"I missed my OPT deadline…", stamp:"Kamba has the answer →",
+  ft_e:"What Kamba does", ft_t:"It doesn’t just answer. It <span class=\"u\">moves forward with you.</span>", online:"online",
+  c1a:"I’m stuck on the DS-160 🥲", c1b:"Let’s fill it in together, section by section. Then: proof of funds, and a mock interview.", c1c:"Ok, let’s go!",
+  f1t:"Your visa file", f1:"Guided DS-160, proof of funds, and interview practice before the big day.",
+  c2a:"Can I pay SEVIS in naira?", c2r1:"SEVIS fee", c2r2:"Paid in", c2r3:"Status", c2r4:"✓ Paid", c2b:"Here’s your receipt 🧾 You saw the rate before confirming.",
+  f2t:"Official fees", f2:"SEVIS, CAQ, application fees: pay in naira, cedis or CFA francs, with the receipt in the chat.",
+  c3a:"The landlord wants a $1,500 deposit before the viewing.", c3b:"⚠️ Hold on! A deposit before a viewing is a common scam sign. Let me check the landlord first.",
+  f3t:"Your housing", f3:"Kamba checks the landlord and deposit rules before any money moves.",
+  al_t:"Kamba warns you ahead of time.", al_p:"It keeps an eye on your deadlines and messages you first, before it’s too late.",
+  ch1:"Visa dates", ch2:"Work hours", ch3:"Payments", ch4:"Applications",
+  px_e:"Pricing", px_t:"Stop paying agencies thousands of dollars.", ag_t:"A typical agency",
+  ag1:"Per application, often paid upfront", ag2:"Support usually ends after the visa", ag3:"Hard to know if the advice is right",
+  ka_p:"Free to start", ka1:"You only pay for the tasks you use", ka2:"From visa to first job", ka3:"The rate is shown before every payment",
+  disc:"Governments decide visas. Kamba replaces the middleman, not the official process.",
+  jr_e:"Your route", jr_t:"A plan built for your move.", jr_p:"No app to download. Text or send a voice note on WhatsApp, and Kamba adapts everything to where you’re leaving from and where you’re going.",
+  pass:"Boarding pass", nx:"Next step", nx1:"CAQ, then study permit", nx2:"DS-160 and SEVIS fee", nx3:"Study permit and proof of funds", more:"+ more",
+  fq_t:"Your questions, answered.",
+  q1:"What is Kamba?", a1:"An AI companion for students moving abroad. It lives in WhatsApp and stays with you from admission letter to first job.",
+  q2:"Can Kamba get me a visa?", a2:"No. Governments decide. Kamba makes sure your file is complete and on time, and points you to a lawyer or your school’s international office when needed.",
+  q3:"How do payments work?", a3:"Chatting is free to start. Official fees are paid in your local currency, with the rate shown before you confirm. No upfront packages.",
+  q4:"Are my documents private?", a4:"Yes. Your documents belong to you. They’re used only for the tasks you ask for, never sold or shared, and can be deleted on request.",
+  q5:"Which languages?", a5:"French, English, Pidgin, Portuguese, Arabic and more. Official forms stay in the required language.",
+  q6:"Which countries?", a6:"We’re starting with West Africa (Nigeria, Senegal, Côte d’Ivoire, Ghana) to the US and Canada, with more destinations coming.",
+  rd1:"Home", rd2:"Your new life", cap_ag:"with an agency: detours everywhere", cap_ka:"with Kamba: straight there ✈",
+  dep_t:"Departures · Kamba Air", dh1:"Time", dh2:"Destination", dh3:"Flight", dh4:"Gate", dh5:"Status", ok:"On time", go:"Boarding", soon:"Soon", dep_f:"Boarding gate: WhatsApp. No app, no queue.",
+  bp_e:"Your ticket", bp_t:"Four stops. One companion.", bp_from:"From", bp_to:"To", e1:"Admission", e1s:"Your letter", e2:"Visa", e2s:"File and interview", e3:"Arrival", e3s:"Housing, bank, SIM", e4:"First job", e4s:"Rules and CV", i1:"Passenger", i1v:"You", i2:"Flight", i3:"Gate", i4:"Class", i4v:"Free", seat:"Seat", board_now:"Board now",
+  menu_open:"Open menu", menu_close:"Close menu", to_top:"Back to top",
+  join:"240 students are joining us this week", fn_t:"Your life abroad starts with a message.",
+  fn_p:"Say hi to Kamba on WhatsApp. It asks where you’re at, and you move forward together. Free to start.", num:"WhatsApp:",
+  l1:"About", l2:"Careers", l3:"Terms", l4:"Privacy",
+  legal:"Kamba guides you, but never grants visas and doesn’t give legal advice.", copy:"© 2026 Kamba AI · operated by MassKode LLC"
+}};
+T.fr = {};
+document.querySelectorAll("[data-i18n]").forEach(el=>{ T.fr[el.dataset.i18n] ??= el.textContent; });
+document.querySelectorAll("[data-i18n-html]").forEach(el=>{ T.fr[el.dataset.i18nHtml] = el.innerHTML; });
+document.querySelectorAll("[data-i18n-aria]").forEach(el=>{ T.fr[el.dataset.i18nAria] = el.getAttribute("aria-label"); });
+T.fr.menu_close = "Fermer le menu";
+function setLang(l){
+  const d = T[l] || T.fr;
+  document.documentElement.lang = l;
+  document.querySelectorAll("[data-i18n]").forEach(el=>{ const v=d[el.dataset.i18n]; if(v!=null) el.textContent=v; });
+  document.querySelectorAll("[data-i18n-html]").forEach(el=>{ const v=d[el.dataset.i18nHtml]; if(v!=null) el.innerHTML=v; });
+  document.querySelectorAll("[data-i18n-aria]").forEach(el=>{ const v=d[el.dataset.i18nAria]; if(v!=null) el.setAttribute("aria-label",v); });
+  document.querySelectorAll(".lang button").forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.lang===l)));
+  try{ localStorage.setItem("kamba-lang", l); }catch(e){}
+}
+document.querySelectorAll(".lang button").forEach(b=>b.addEventListener("click",()=>setLang(b.dataset.lang)));
+let start="fr";
+try{ start = localStorage.getItem("kamba-lang") || "fr"; }catch(e){}
+setLang(start);
+
+// ---- menus hamburger (header + barre fixe) ----
+(function(){
+  const pairs=[...document.querySelectorAll("[data-burger]")].map(b=>[b,document.getElementById(b.getAttribute("aria-controls"))]);
+  const set=(b,m,open)=>{ m.hidden=!open; b.setAttribute("aria-expanded",String(open)); b.dataset.i18nAria = open?"menu_close":"menu_open"; const l=document.documentElement.lang; b.setAttribute("aria-label",(T[l]||T.fr)[b.dataset.i18nAria]); };
+  const closeAll=()=>pairs.forEach(([b,m])=>{ if(!m.hidden) set(b,m,false); });
+  pairs.forEach(([b,m])=>{
+    b.addEventListener("click",e=>{ e.stopPropagation(); const open=m.hidden; closeAll(); set(b,m,open); });
+    m.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>set(b,m,false)));
+  });
+  document.addEventListener("click",e=>{ pairs.forEach(([b,m])=>{ if(!m.hidden && !m.contains(e.target)) set(b,m,false); }); });
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape") pairs.forEach(([b,m])=>{ if(!m.hidden){ set(b,m,false); b.focus(); } }); });
+  window.addEventListener("resize",()=>{ if(window.innerWidth>1000) closeAll(); });
+  window.__closeMenus=closeAll;
+})();
+
+// ---- barre fixe : visible seulement après le header ----
+(function(){
+  const bar=document.getElementById("sbar"), hero=document.querySelector(".hero-card");
+  const update=()=>{ const past = hero.getBoundingClientRect().bottom < 0; if(bar.classList.contains("show")!==past){ bar.classList.toggle("show",past); window.__closeMenus && window.__closeMenus(); } };
+  window.addEventListener("scroll",update,{passive:true}); window.addEventListener("resize",update); update();
+})();
+
+// ---- bouton retour en haut ----
+(function(){
+  const t=document.getElementById("toTop");
+  const onS=()=>t.classList.toggle("show", window.scrollY > 600);
+  window.addEventListener("scroll",onS,{passive:true}); onS();
+  t.addEventListener("click",()=>{ window.scrollTo({top:0,behavior:"smooth"}); document.querySelector(".logo")?.focus({preventScroll:true}); });
+})();
+
+// ---- apparition des cartes au défilement ----
+(function(){
+  const reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduce || !("IntersectionObserver" in window)) return;
+  const below = el => el.getBoundingClientRect().top > window.innerHeight * 0.9;
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+  },{threshold:.15, rootMargin:"0px 0px -6% 0px"});
+  const sel = ".stat, .board .note, .ph, .alerts, .cmp > div, .pass, .bigpass, details, .final .card";
+  document.querySelectorAll(sel).forEach(el=>{
+    if (!below(el)) return;
+    const sib=[...el.parentElement.children].filter(c=>c.matches(sel));
+    el.style.transitionDelay = (sib.indexOf(el)%4)*100 + "ms";
+    el.classList.add("reveal");
+    io.observe(el);
+  });
+})();
+</script>
+
+</body>
+</html>
